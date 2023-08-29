@@ -1,11 +1,16 @@
-""" A collection of functions to extract WKT from selected features. """
+"""A collection of functions to extract WKT from selected features."""
 
-from qgis.core import Qgis, QgsProject, QgsCoordinateReferenceSystem, QgsCoordinateTransform
+from qgis.core import (
+    Qgis,
+    QgsCoordinateReferenceSystem,
+    QgsCoordinateTransform,
+    QgsProject,
+)
 from qgis.utils import iface
 
 
 def get_wkt_of_selected_feature(precision=4):
-    """ Returns the WKT of the first selected polygon in WGS84. """
+    """Returns the WKT of the first selected polygon in WGS84."""
 
     # grab the active layer and the list of selected features in this layer
     active_layer = iface.activeLayer()
@@ -13,7 +18,12 @@ def get_wkt_of_selected_feature(precision=4):
 
     # if none are selected, show a message and return
     if len(selected_features) == 0:
-        iface.messageBar().pushMessage('Error', 'No features selected', level=Qgis.Critical, duration=3)
+        iface.messageBar().pushMessage(
+            "Error",
+            "No features selected",
+            level=Qgis.Critical,
+            duration=3,
+        )
         return
 
     # if there are selected features, grab the first and extract the geometry
@@ -22,9 +32,10 @@ def get_wkt_of_selected_feature(precision=4):
 
     # reproject to WGS84 if active layer has a different CRS
     source_crs = active_layer.crs()
-    if source_crs.authid() != 'EPSG:4326':
-        project = QgsProject.instance()  # the QgsCoordinateTransform needs the project for some reason
-        target_crs = QgsCoordinateReferenceSystem('EPSG:4326')
+    if source_crs.authid() != "EPSG:4326":
+        # the QgsCoordinateTransform needs the project for some reason
+        project = QgsProject.instance()
+        target_crs = QgsCoordinateReferenceSystem("EPSG:4326")
         transform = QgsCoordinateTransform(source_crs, target_crs, project)
 
         geometry.transform(transform)
